@@ -21,11 +21,11 @@ export const signin = async (req, res, next) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.next(errorHandler(404, "User not found"));
+      return next(errorHandler(404, "User not found"));
     }
     const validPassword = bcryptjs.compareSync(password, user.password);
     if (!validPassword) {
-      return res.next(errorHandler(401, "Wrong Credentials!"));
+      return next(errorHandler(401, "Wrong Credentials!"));
     }
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
     const { password: pass, ...rest } = user._doc; // password filed ko rename kr k pass nam rakh do or baqi data ko rest me stroe krwaa don or rest ko respone me dekha do
