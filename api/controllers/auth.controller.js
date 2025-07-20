@@ -69,22 +69,3 @@ export const google = async (req, res, next) => {
     next(error);
   }
 };
-
-/*export const google = async (req, res, next) => {
-  try {
-    console.log("GOOGLE SIGNIN BODY:", req.body); // 👈 add this line
-
-    const { email, name, photo } = req.body;
-
-    if (!email || !name) {
-      return res.status(400).json({ message: "Missing fields" });
-    }
-
-    // continue with rest of logic...
-  } catch (error) {
-    console.error("GOOGLE SIGNIN ERROR:", error); // 👈 catch and log error
-    return res
-      .status(500)
-      .json({ message: "Something went wrong", error: error.message });
-  }
-};*/
