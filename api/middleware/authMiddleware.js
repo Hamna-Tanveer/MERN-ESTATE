@@ -1,18 +1,17 @@
 import jwt from "jsonwebtoken";
+import { errorHandler } from "../utils/error.js";
 
 export const verifyToken = (req, res, next) => {
   console.log(req.cookies);
   const token = req.cookies.token;
 
   if (!token) {
-    return res
-      .status(401)
-      .json({ message: "Not authenticated, token missing" });
+    return next(errorHandler(401, "Unauthorized"));
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded user from JWT:", decoded); // 👈 ye console karo
+    //console.log("Decoded user from JWT:", decoded); // 👈 ye console karo
     // req.user = decoded;
     req.user = {
       id: decoded._id,
@@ -21,6 +20,6 @@ export const verifyToken = (req, res, next) => {
 
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    next(err);
   }
 };

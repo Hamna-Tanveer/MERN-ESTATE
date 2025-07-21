@@ -1,12 +1,19 @@
 import { useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateUser } from "../redux/user/userSlice.js";
+import {
+  updateUser,
+  updateStart,
+  updateSuccess,
+  updateFailure,
+} from "../redux/user/userSlice.js";
 
 export default function Profile() {
   const fileRef = useRef(null);
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState({ type: null, message: "" }); // null | 'uploading' | 'success' | 'error'
+  const [updatedData, setUpdatedData] = useState({});
+  const [updateUserSuccess, setUpdateUserSuccess] = useState(false);
   const dispatch = useDispatch();
 
   const handleFileChange = async (e) => {
@@ -41,6 +48,34 @@ export default function Profile() {
       setTimeout(() => setStatus({ type: null, message: "" }), 3000);
     }
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateStart());
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(updateFailure(data.message));
+        return;
+      }
+      dispatch(updateSuccess(data));
+      setUpdateUserSuccess(true);
+    } catch (error) {
+      dispatch(updateFailure(error.message));
+    }
+  };
+
+  const handleChange = async (e) => {
+    setUpdatedData({ ...updatedData, [e.target.id]: e.target.value });
+  };
+  console.log("currentUser in Profile:", currentUser);
 
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -83,31 +118,35 @@ export default function Profile() {
           </p>
         )}
       </div>
-
-      {/* Rest of your form remains unchanged */}
-      <form className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           className="border p-3 rounded-lg"
           type="text"
           placeholder="username"
           id="username"
-          defaultValue={currentUser.username}
+          value={updatedData.username || currentUser.username}
+          onChange={handleChange}
         />
         <input
           className="border p-3 rounded-lg"
           type="email"
           placeholder="email"
           id="email"
-          defaultValue={currentUser.email}
+          value={updatedData.email || currentUser.email}
+          onChange={handleChange}
         />
         <input
           className="border p-3 rounded-lg"
           type="password"
           placeholder="password"
           id="password"
+          onChange={handleChange}
         />
-        <button className="bg-slate-700 text-white p-3 uppercase rounded-lg hover:opacity-95 disabled:opacity-80">
-          Update
+        <button
+          disabled={loading}
+          className="bg-slate-700 text-white p-3 uppercase rounded-lg hover:opacity-95 disabled:opacity-80"
+        >
+          {loading ? "Loading..." : "Update"}
         </button>
       </form>
 
@@ -119,6 +158,11 @@ export default function Profile() {
           Sign out
         </span>
       </div>
+
+      <p className="text-red-700 mt-5">{error ? error : ""}</p>
+      <p className="text-green-700 mt-5">
+        {updateUserSuccess ? "User is updated successfully" : ""}
+      </p>
     </div>
   );
 }
