@@ -1,6 +1,7 @@
 // api/routes/user.route.js
 import express from "express";
 import {
+  deleteUser,
   updateUser,
   uploadProfilePic,
 } from "../controllers/user.controller.js";
@@ -17,5 +18,6 @@ router.post(
 );
 
 router.post("/update/:id", verifyToken, updateUser);
+router.delete("/delete/:id", verifyToken, deleteUser);
 
 export default router;
