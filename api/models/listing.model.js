@@ -1,5 +1,4 @@
 import mongoose, { Schema, model } from "mongoose";
-import { type } from "os";
 const listingSchema = new Schema(
   {
     name: {
@@ -47,7 +46,15 @@ const listingSchema = new Schema(
       required: true,
     },
     imageUrls: {
-      type: Array,
+      type: [String],
+      required: true,
+      validate: {
+        validator: (array) => array.length > 0 && array.length < 6,
+        message: "You must provide images between 1 and 6",
+      },
+    },
+    cloudinaryPublicIds: {
+      type: [String],
       required: true,
     },
     userRef: {

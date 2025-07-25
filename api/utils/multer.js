@@ -36,3 +36,4 @@ const upload = multer({
 });
 
 export const uploadSingle = (fieldName) => upload.single(fieldName);
+export const uploadListingImages = upload.array("images", 6);
