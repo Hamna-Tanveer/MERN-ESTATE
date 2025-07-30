@@ -40,7 +40,7 @@ export default function UpdateListing() {
       setFormData(data);
     };
     fetchListing();
-  }, []);
+  });
 
   //handle file change
   const handleFileSelect = (e) => {
