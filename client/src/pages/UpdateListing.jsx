@@ -137,66 +137,69 @@ export default function UpdateListing() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Validate form
       if (formData.imageUrls.length < 1)
-        return setError("You must upload at least one image ");
+        return setError("You must upload at least one image");
       if (+formData.regularPrice < +formData.discountPrice)
         return setError("Discount price must be lower than regular price");
+
       setLoading(true);
       setError(false);
 
-      // Upload images to Cloudinary first
-      const imageUploadPromises = files.map((file) => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append(
-          "upload_preset",
-          import.meta.env.VITE_CLOUDINARY_PRESET
-        ); // Set up in Cloudinary
-        return fetch(
-          `https://api.cloudinary.com/v1_1/${
-            import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
-          }/image/upload`,
-          {
-            method: "POST",
-            body: formData,
-          }
-        ).then((res) => res.json());
-      });
-
-      const uploadResults = await Promise.all(imageUploadPromises);
-      const imageUrls = uploadResults.map((result) => result.secure_url);
-      const cloudinaryPublicIds = uploadResults.map(
-        (result) => result.public_id
+      // 1. Filter out blob URLs (keep only Cloudinary URLs)
+      const existingCloudinaryUrls = formData.imageUrls.filter(
+        (url) => !url.startsWith("blob:")
       );
 
-      // Send the rest of the data with image URLs
-      console.log(params.listingId);
+      // 2. Upload new files (if any) to Cloudinary
+      let newCloudinaryUrls = [];
+      let cloudinaryPublicIds = [];
+
+      if (files.length > 0) {
+        const uploadResults = await Promise.all(
+          files.map((file) => {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append(
+              "upload_preset",
+              import.meta.env.VITE_CLOUDINARY_PRESET
+            );
+            return fetch(
+              `https://api.cloudinary.com/v1_1/${
+                import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+              }/image/upload`,
+              { method: "POST", body: formData }
+            ).then((res) => res.json());
+          })
+        );
+
+        newCloudinaryUrls = uploadResults.map((result) => result.secure_url);
+        cloudinaryPublicIds = uploadResults.map((result) => result.public_id);
+      }
+
+      // 3. Combine existing Cloudinary URLs + newly uploaded ones
+      const finalImageUrls = [...existingCloudinaryUrls, ...newCloudinaryUrls];
+
+      // 4. Send to server (only permanent Cloudinary URLs)
       const res = await fetch(`/api/listing/update/${params.listingId}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          imageUrls,
+          imageUrls: finalImageUrls, // Only Cloudinary URLs
           cloudinaryPublicIds,
         }),
       });
 
       const data = await res.json();
-      console.log(data);
       setLoading(false);
+
       if (data.success === false) {
         setError(data.message);
-      }
-      const listing_id = data._id;
-      if (!listing_id) {
-        console.error("_id is missing in parsed data");
-        //console.log("Full data object keys :", Object.keys(data));
-        throw new Error("Listing created but no ID returned");
+        return;
       }
 
-      navigate(`/listing/${listing_id}`);
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setError(error.message);
       setLoading(false);
