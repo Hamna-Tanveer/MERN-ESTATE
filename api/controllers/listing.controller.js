@@ -121,15 +121,15 @@ export const getListings = async (req, res, next) => {
     // filtering
     let offer = req.query.offer;
     // agr offer undefined ya false he tu koi filter na lagao or sari listings show krwao
-    if (offer === undefined || offer === false) {
+    if (offer === undefined || offer === "false") {
       offer = { $in: [false, true] };
     }
     let furnished = req.query.furnished;
-    if (furnished === undefined || furnished === false) {
+    if (furnished === undefined || furnished === "false") {
       furnished = { $in: [false, true] };
     }
     let parking = req.query.parking;
-    if (parking === undefined || parking === false) {
+    if (parking === undefined || parking === "false") {
       parking = { $in: [false, true] };
     }
     let type = req.query.type;
