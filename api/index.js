@@ -8,7 +8,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
-
+const PORT = process.env.PORT || 3000;
 const app = express();
 // DB Connection
 mongoose
@@ -34,4 +34,4 @@ app.use((err, req, res, next) => {
     message,
   });
 });
-app.listen(3000, () => console.log("Server running at port 3000"));
+app.listen(PORT, () => console.log("Server running at port 3000"));
