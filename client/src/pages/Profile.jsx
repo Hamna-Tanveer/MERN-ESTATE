@@ -37,11 +37,16 @@ export default function Profile() {
       const formData = new FormData();
       formData.append("avatar", selectedFile);
 
-      const res = await fetch(`/api/user/upload/${currentUser._id}`, {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/upload/${
+          currentUser._id
+        }`,
+        {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        }
+      );
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -63,13 +68,18 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateStart());
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/update/${
+          currentUser._id
+        }`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedData),
+        }
+      );
       const data = await res.json();
       if (data.success === false) {
         dispatch(updateFailure(data.message));
@@ -89,9 +99,14 @@ export default function Profile() {
   const handleDeleteUser = async () => {
     try {
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/delete/${
+          currentUser._id
+        }`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await res.json();
       if (data.success === false) {
         dispatch(deleteUserFailure(data.message));
@@ -107,9 +122,12 @@ export default function Profile() {
   const handleSignOut = async () => {
     try {
       dispatch(signOutStart());
-      const res = await fetch("/api/auth/signout", {
-        method: "GET",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/signout`,
+        {
+          method: "GET",
+        }
+      );
       const data = await res.json();
       if (data.success == false) {
         dispatch(signOutFailure(data.message));
@@ -126,7 +144,11 @@ export default function Profile() {
   const handleShowListing = async () => {
     try {
       setShowListingError(false);
-      const res = await fetch(`/api/user/listing/${currentUser._id}`);
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/listing/${
+          currentUser._id
+        }`
+      );
       const data = await res.json();
       if (data.success === false) {
         setShowListingError(true);
@@ -141,9 +163,12 @@ export default function Profile() {
 
   const handleDeleteListing = async (listingId) => {
     try {
-      const res = await fetch(`/api/listing/delete/${listingId}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/listing/delete/${listingId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       const data = await res.json();
 

@@ -28,7 +28,11 @@ export default function Listing() {
     const fetchListing = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/listing/get/${params.listingId}`);
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/listing/get/${
+            params.listingId
+          }`
+        );
         // console.log("raw respones:", res);
         const data = await res.json();
         // console.log("parsed data:", data);

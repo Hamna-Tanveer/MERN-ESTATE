@@ -17,7 +17,9 @@ mongoose
 
 // middleware
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({ origin: "https://mern-estate-khaki.vercel.app", credentials: true })
+);
 app.use(cookieParser());
 
 // set routes

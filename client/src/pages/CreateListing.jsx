@@ -150,17 +150,20 @@ export default function CreateListing() {
       );
 
       // Send the rest of the data with image URLs
-      const res = await fetch("/api/listing/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...formData,
-          imageUrls,
-          cloudinaryPublicIds,
-        }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/listing/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formData,
+            imageUrls,
+            cloudinaryPublicIds,
+          }),
+        }
+      );
 
       const data = await res.json();
 

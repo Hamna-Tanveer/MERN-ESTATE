@@ -31,7 +31,9 @@ export default function UpdateListing() {
   useEffect(() => {
     const fetchListing = async () => {
       const listingId = params.listingId;
-      const res = await fetch(`/api/listing/get/${listingId}`);
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/listing/get/${listingId}`
+      );
       const data = await res.json();
       if (data.success === false) {
         console.log(data.message);
@@ -181,15 +183,20 @@ export default function UpdateListing() {
       const finalImageUrls = [...existingCloudinaryUrls, ...newCloudinaryUrls];
 
       // 4. Send to server (only permanent Cloudinary URLs)
-      const res = await fetch(`/api/listing/update/${params.listingId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          imageUrls: finalImageUrls, // Only Cloudinary URLs
-          cloudinaryPublicIds,
-        }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/listing/update/${
+          params.listingId
+        }`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...formData,
+            imageUrls: finalImageUrls, // Only Cloudinary URLs
+            cloudinaryPublicIds,
+          }),
+        }
+      );
 
       const data = await res.json();
       setLoading(false);
