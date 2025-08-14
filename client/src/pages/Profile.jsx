@@ -26,6 +26,7 @@ export default function Profile() {
   const [listings, setListings] = useState([]);
   const dispatch = useDispatch();
 
+  console.log(currentUser._id);
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
