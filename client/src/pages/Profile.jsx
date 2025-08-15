@@ -75,6 +75,7 @@ export default function Profile() {
         }`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -106,6 +107,7 @@ export default function Profile() {
         }`,
         {
           method: "DELETE",
+          credentials: "include",
         }
       );
       const data = await res.json();
@@ -127,6 +129,7 @@ export default function Profile() {
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/signout`,
         {
           method: "GET",
+          credentials: "include",
         }
       );
       const data = await res.json();
